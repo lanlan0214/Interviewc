@@ -1,0 +1,28 @@
+﻿@model Interview.Models.Dish
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-center">
+        <h3>@Model.Name</h3>
+    </div>
+    <div class="d-flex justify-content-center">
+        <img src="@Model.ImageUrl" style="width: 50%" />
+    </div>
+    <div class="d-flex justify-content-center">
+        @Model.Price.ToString("N0")元
+    </div>
+    <div class="d-flex justify-content-center">
+        成份:
+        <ul>            
+            @foreach(var item in Model.DishIngredients)
+            {
+                <li>
+                    @item.Ingredient.Name
+                </li>
+            }
+        </ul>
+    </div>
+    <a class="btn btn-info d-flex justify-content-center" asp-action="Index">回到菜單</a>
+</div>
