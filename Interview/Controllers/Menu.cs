@@ -2,11 +2,15 @@
 using Interview.Data;
 using Interview.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Interview.Controllers
 {
-    public class Menu : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class Menu : ControllerBase
     {
         private readonly MenuContext _context;
 
@@ -14,18 +18,23 @@ namespace Interview.Controllers
         {
             _context = context;
         }
-        public async Task<IActionResult> Index(string searchString)
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Dish>>> GetDishes([FromQuery] string? searchString = null)
         {
             var dishes = from d in _context.Dishes
-                       select d;
-            if(!string.IsNullOrEmpty(searchString))
+                         select d;
+
+            if (!string.IsNullOrEmpty(searchString))
             {
                 dishes = dishes.Where(d => d.Name.Contains(searchString));
-                return View(await dishes.ToListAsync());
             }
-            return View(await dishes.ToListAsync());
+
+            return await dishes.ToListAsync();
         }
-        public async Task<IActionResult> Details(int? id)
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Dish>> GetDish(int id)
         {
             var dish = await _context.Dishes
                 .Include(di => di.DishIngredients)
@@ -36,7 +45,13 @@ namespace Interview.Controllers
             {
                 return NotFound();
             }
-            return View(dish);
+
+            return dish;
+        }
+
+        private bool DishExists(int id)
+        {
+            return _context.Dishes.Any(e => e.Id == id);
         }
     }
 }
