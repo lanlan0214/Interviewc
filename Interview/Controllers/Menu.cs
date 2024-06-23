@@ -49,6 +49,15 @@ namespace Interview.Controllers
             return dish;
         }
 
+        [HttpPost]
+        public async Task<ActionResult<Dish>> PostDish(Dish dish)
+        {
+            _context.Dishes.Add(dish);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetDish), new { id = dish.Id }, dish);
+        }
+
         private bool DishExists(int id)
         {
             return _context.Dishes.Any(e => e.Id == id);

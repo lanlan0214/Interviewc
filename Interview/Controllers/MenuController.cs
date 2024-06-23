@@ -49,5 +49,29 @@ namespace Interview.Controllers
 
             return View(dish);
         }
+        // GET: /Menu/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: /Menu/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,Name,ImageUrl,Price")] Dish dish)
+        {
+            if (ModelState.IsValid)
+            {
+                var client = _httpClientFactory.CreateClient("MenuApiClient");
+                var response = await client.PostAsJsonAsync("/api/Menu", dish);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                ModelState.AddModelError(string.Empty, "新增菜單失敗");
+            }
+            return View(dish);
+        }
     }
 }
