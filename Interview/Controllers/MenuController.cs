@@ -74,7 +74,7 @@ namespace Interview.Controllers
             return View(dish);
         }
 
-        // POST: /Menu/Delete/5
+        // DELETE: /Menu/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -89,6 +89,48 @@ namespace Interview.Controllers
 
             ModelState.AddModelError(string.Empty, "刪除菜單失敗");
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: /Menu/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var client = _httpClientFactory.CreateClient("MenuApiClient");
+            var dish = await client.GetFromJsonAsync<Dish>($"/api/Menu/{id}");
+
+            if (dish == null)
+            {
+                return NotFound();
+            }
+
+            return View(dish);
+        }
+        // POST: /Menu/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,ImageUrl,Price")] Dish dish)
+        {
+            if (id != dish.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var client = _httpClientFactory.CreateClient("MenuApiClient");
+                var response = await client.PutAsJsonAsync($"/api/Menu/{id}", dish);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                ModelState.AddModelError(string.Empty, "更新菜單失敗");
+            }
+            return View(dish);
         }
 
     }

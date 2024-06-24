@@ -73,6 +73,36 @@ namespace Interview.Controllers
             return NoContent();
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutDish(int id, Dish dish)
+        {
+            if (id != dish.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(dish).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!DishExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+
 
         private bool DishExists(int id)
         {
