@@ -58,6 +58,22 @@ namespace Interview.Controllers
             return CreatedAtAction(nameof(GetDish), new { id = dish.Id }, dish);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteDish(int id)
+        {
+            var dish = await _context.Dishes.FindAsync(id);
+            if (dish == null)
+            {
+                return NotFound();
+            }
+
+            _context.Dishes.Remove(dish);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+
         private bool DishExists(int id)
         {
             return _context.Dishes.Any(e => e.Id == id);

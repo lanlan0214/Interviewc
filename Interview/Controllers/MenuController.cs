@@ -73,5 +73,23 @@ namespace Interview.Controllers
             }
             return View(dish);
         }
+
+        // POST: /Menu/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var client = _httpClientFactory.CreateClient("MenuApiClient");
+            var response = await client.DeleteAsync($"/api/Menu/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            ModelState.AddModelError(string.Empty, "刪除菜單失敗");
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

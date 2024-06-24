@@ -6,6 +6,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// 這段代碼的目的是在序列化 JSON 時自動忽略循環引用，從而避免可能出現的錯誤或崩潰情況，並且確保序列化過程順利完成。這在處理具有複雜關聯關係的數據模型時非常有用。
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
+
 builder.Services.AddDbContext<MenuContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
 
